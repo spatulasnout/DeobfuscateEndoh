@@ -14,9 +14,9 @@
 using std::complex;
 using std::unique_ptr;
 
-#define Gravity		1.0
-#define Pressure	4.0
-#define Velocity	8.0
+#define Gravity		1.0f
+#define Pressure	4.0f
+#define Velocity	8.0f
 
 
 class EndohDeobfuscate {
@@ -24,7 +24,7 @@ public:
 	static const size_t SIMBUF_LEN = 97687;
 	static const size_t SCRBUF_LEN = 6856;
 
-	typedef complex<double> complex_type;
+	typedef complex<float> complex_type;
 
 	void init (FILE *in = stdin)
 	{
@@ -40,7 +40,7 @@ public:
 			// w = (x > 10 ? (32 < x ? 4[*r++ = w, r] = w + 1, *r = r[5] = x == 35, r += 9 : 0, w - _Complex_I) : (x = w + 2));
 
 			if (ch > '\n') {
-				w = (' ' < ch ? 4[*r++ = w, r] = w + 1.0, *r = r[5] = ch == '#', r += 9 : 0, w - I);
+				w = (' ' < ch ? 4[*r++ = w, r] = w + 1.0f, *r = r[5] = ch == '#', r += 9 : 0, w - I);
 			}
 			else {
 				w = complex_type(((int)w.real()) + 2, 0);
@@ -75,9 +75,9 @@ public:
 			dbg__sim_ops_per_frame = 0;
 			dbg__render_ops_per_frame = 0;
 
-			for (p = a; p[2] = p[1] * 9.0, p < r; p += 5) {
+			for (p = a; p[2] = p[1] * 9.0f, p < r; p += 5) {
 				for (q = a; w = abs(d = *p - *q) / 2 - 1, q < r; q += 5) {
-					if (0 < (x = (1.0 - w).real())) {
+					if (0 < (x = (1.0f - w).real())) {
 						p[2] += w * w;
 						++dbg__sim_ops_per_frame;
 					}
@@ -87,8 +87,8 @@ public:
 			// Iterate over the positions(?) of particles
 			for (p = a; p[3] = Gravity, p < r; p += 5) {
 				for (q = a; w = abs(d = *p - *q) / 2 - 1, q < r; q += 5) {
-					if (0 < (x = (1.0 - w).real())) {
-						p[3] += w * (d * (3.0 - p[2] - q[2]) * Pressure + p[4] * Velocity - q[4] * Velocity) / p[2];
+					if (0 < (x = (1.0f - w).real())) {
+						p[3] += w * (d * (3.0f - p[2] - q[2]) * Pressure + p[4] * Velocity - q[4] * Velocity) / p[2];
 						++dbg__sim_ops_per_frame;
 					}
 				}
@@ -100,7 +100,7 @@ public:
 			}
 
 			// marching squares
-			for (p = a; (t = b + 10 + (x = (*p * I).real()) + 80 * (y = (*p / 2.0).real()), *p += p[4] += (p[3] / 10.0) * (double)(!(p[1].real())) ), p < r; p += 5) {
+			for (p = a; (t = b + 10 + (x = (*p * I).real()) + 80 * (y = (*p / 2.0f).real()), *p += p[4] += (p[3] / 10.0f) * (float)(!(p[1].real())) ), p < r; p += 5) {
 				x = 0 <= x && x < 79 && 0 <= y && y < 23 ? 1[1[*t |= 8, t] |= 4, t += 80] = 1, *t |= 2 : 0;
 				++dbg__render_ops_per_frame;
 			}
