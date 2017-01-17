@@ -18,13 +18,21 @@ using std::unique_ptr;
 #define Pressure	4.0f
 #define Velocity	8.0f
 
+typedef complex<float> complex_type;
+
+struct Particle {
+	complex_type	position;
+	complex_type	wall_flag;
+	complex_type	pressure;
+	complex_type	density;
+	complex_type	force;
+	complex_type	velocity;
+};
 
 class EndohDeobfuscate {
 public:
 	static const size_t SIMBUF_LEN = 97687;
 	static const size_t SCRBUF_LEN = 6856;
-
-	typedef complex<float> complex_type;
 
 	void init (FILE *in = stdin)
 	{
@@ -35,12 +43,18 @@ public:
 
 		r = a;
 		for (int ch;  (ch = getc(in)) != EOF; ) {
-			// putc(ch, stdout);
-
-			// w = (x > 10 ? (32 < x ? 4[*r++ = w, r] = w + 1, *r = r[5] = x == 35, r += 9 : 0, w - _Complex_I) : (x = w + 2));
+//			w = (x > 10 ? (32 < x ? 4[*r++ = w, r] = w + 1, *r = r[5] = x == 35, r += 9 : 0, w - _Complex_I) : (x = w + 2));
 
 			if (ch > '\n') {
-				w = (' ' < ch ? 4[*r++ = w, r] = w + 1.0f, *r = r[5] = ch == '#', r += 9 : 0, w - I);
+
+				if (ch > ' ') {
+					r[0] = w;
+					r[5] = (w + 1.0f);
+					r[1] = r[6] = (ch == '#');
+					r += 10;
+				}
+
+				w = w - I;
 			}
 			else {
 				w = complex_type(((int)w.real()) + 2, 0);
@@ -72,6 +86,7 @@ public:
 			puts(o);
 
 			printf("\nsim ops/frame: %08d\nvis ops/frame: %08d\n", dbg__sim_ops_per_frame, dbg__render_ops_per_frame);
+
 			dbg__sim_ops_per_frame = 0;
 			dbg__render_ops_per_frame = 0;
 
@@ -84,7 +99,6 @@ public:
 				}
 			}
 
-			// Iterate over the positions(?) of particles
 			for (p = a; p[3] = Gravity, p < r; p += 5) {
 				for (q = a; w = abs(d = *p - *q) / 2 - 1, q < r; q += 5) {
 					if (0 < (x = (1.0f - w).real())) {
