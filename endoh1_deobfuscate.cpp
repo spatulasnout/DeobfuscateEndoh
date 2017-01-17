@@ -23,7 +23,6 @@ typedef complex<float> complex_type;
 struct Particle {
 	complex_type	position;
 	complex_type	wall_flag;
-	complex_type	pressure;
 	complex_type	density;
 	complex_type	force;
 	complex_type	velocity;
@@ -72,6 +71,7 @@ public:
 
 		clearscreen();
 
+		int dbg__sim_cells_per_frame = 0;
 		int dbg__sim_ops_per_frame = 0;
 		int dbg__render_ops_per_frame = 0;
 
@@ -85,26 +85,33 @@ public:
 			char *o = b + (4 + 6);
 			puts(o);
 
-			printf("\nsim ops/frame: %08d\nvis ops/frame: %08d\n", dbg__sim_ops_per_frame, dbg__render_ops_per_frame);
+			printf("\nsim cells/frame: %08d\nsim ops/frame  : %08d\nvis ops/frame  : %08d\n", dbg__sim_cells_per_frame, dbg__sim_ops_per_frame, dbg__render_ops_per_frame);
 
+			dbg__sim_cells_per_frame = 0;
 			dbg__sim_ops_per_frame = 0;
 			dbg__render_ops_per_frame = 0;
 
-			for (p = a; p[2] = p[1] * 9.0f, p < r; p += 5) {
-				for (q = a; w = abs(d = *p - *q) / 2 - 1, q < r; q += 5) {
+			for (p = a; p < r; p += 5) {
+				p[2] = p[1] * 9.0f;
+				for (q = a; q < r; q += 5) {
+					w = abs(d = *p - *q) / 2 - 1;
 					if (0 < (x = (1.0f - w).real())) {
 						p[2] += w * w;
 						++dbg__sim_ops_per_frame;
 					}
+					++dbg__sim_cells_per_frame;
 				}
 			}
 
-			for (p = a; p[3] = Gravity, p < r; p += 5) {
-				for (q = a; w = abs(d = *p - *q) / 2 - 1, q < r; q += 5) {
+			for (p = a; p < r; p += 5) {
+				p[3] = Gravity;
+				for (q = a; q < r; q += 5) {
+					w = abs(d = *p - *q) / 2 - 1;
 					if (0 < (x = (1.0f - w).real())) {
 						p[3] += w * (d * (3.0f - p[2] - q[2]) * Pressure + p[4] * Velocity - q[4] * Velocity) / p[2];
 						++dbg__sim_ops_per_frame;
 					}
+					++dbg__sim_cells_per_frame;
 				}
 			}
 
