@@ -32,6 +32,7 @@ class EndohDeobfuscate {
 public:
 	static const size_t SIMBUF_LEN = 97687;
 	static const size_t SCRBUF_LEN = 6856;
+	static const int SCR_WID = 80;
 
 	void init (FILE *in = stdin)
 	{
@@ -82,8 +83,7 @@ public:
 
 			cursor_home();
 
-			char *o = b + (4 + 6);
-			puts(o);
+			puts(b);
 
 			printf("\nsim cells/frame: %08d\nsim ops/frame  : %08d\nvis ops/frame  : %08d\n", dbg__sim_cells_per_frame, dbg__sim_ops_per_frame, dbg__render_ops_per_frame);
 
@@ -115,27 +115,27 @@ public:
 				}
 			}
 
-			for (x = 9; 2011 > x++;) {
+			for (x = 0; 2002 > x; ++x) {
 				b[x] = 0;
 				++dbg__render_ops_per_frame;
 			}
 
 			// marching squares, and sim cell position update
 			for (p = a; p < r; p += 5) {
-				t = b + 10 + (x = (p[0] * I).real()) + 80 * (y = (p[0] / 2.0f).real());
+				t = b + (x = (p[0] * I).real()) + SCR_WID * (y = (p[0] / 2.0f).real());
 				p[0] += p[4] += (p[3] / 10.0f) * (float)(!(p[1].real()));
 				if (0 <= x && x < 79 && 0 <= y && y < 23) {
 					t[0] |= 8;
 					t[1] |= 4;
-					t += 80;
+					t += SCR_WID;
 					t[0] |= 2;
 					t[1] = 1;
 				}
 				++dbg__render_ops_per_frame;
 			}
 
-			for (x = 9; 2011 > x++;) {
-				b[x] = " '`-.|//,\\|\\_\\/#\n"[x % 80 - 9 ? x[b] : 16];
+			for (x = 0; 2002 > x; ++x) {
+				b[x] = " '`-.|//,\\|\\_\\/#\n"[x % SCR_WID ? x[b] : 16];
 				++dbg__render_ops_per_frame;
 			}
 
