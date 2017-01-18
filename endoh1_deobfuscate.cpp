@@ -135,9 +135,7 @@ public:
 			}
 
 			for (x = 0; 2002 > x; ++x) {
-//				b[x] = " '`-.|//,\\|\\_\\/#\n"[x % SCR_WID ? b[x] : 16];
-
-				bool want_newline = (x > 0) && ((x % SCR_WID) == 0);
+				bool want_newline = (x > 0) && (((x + 1) % SCR_WID) == 0);
 				if (want_newline) {
 					b[x] = '\n';
 				}
@@ -145,7 +143,6 @@ public:
 					char edge_bits = b[x];
 					b[x] = " '`-.|//,\\|\\_\\/#"[edge_bits];
 				}
-
 				++dbg__render_ops_per_frame;
 			}
 
