@@ -30,7 +30,7 @@ struct Particle {
 
 class EndohDeobfuscate {
 public:
-	static const size_t SIMBUF_LEN = 97687;
+	static const size_t SIMBUF_LEN = 19538;
 	static const size_t SCRBUF_LEN = 6856;
 	static const int SCR_WID = 80;
 
@@ -43,15 +43,14 @@ public:
 
 		r = a;
 		for (int ch;  (ch = getc(in)) != EOF; ) {
-//			w = (x > 10 ? (32 < x ? 4[*r++ = w, r] = w + 1, *r = r[5] = x == 35, r += 9 : 0, w - _Complex_I) : (x = w + 2));
-
 			if (ch > '\n') {
 
 				if (ch > ' ') {
-					r[0] = w;
-					r[5] = (w + 1.0f);
-					r[1] = r[6] = (ch == '#');
-					r += 10;
+					Particle *s = (r + 1);
+					r->position = w;
+					s->position = (w + 1.0f);
+					r->wall_flag = s->wall_flag = (ch == '#');
+					r += 2;
 				}
 
 				w = w - I;
@@ -77,7 +76,8 @@ public:
 		int dbg__render_ops_per_frame = 0;
 
 		for (;;) {
-			complex_type *p, *q, w, d;
+			Particle *p, *q;
+			complex_type w, d;
 			int x, y;
 			char *t;
 
@@ -91,24 +91,24 @@ public:
 			dbg__sim_ops_per_frame = 0;
 			dbg__render_ops_per_frame = 0;
 
-			for (p = a; p < r; p += 5) {
-				p[2] = p[1] * 9.0f;
-				for (q = a; q < r; q += 5) {
-					w = abs(d = p[0] - q[0]) / 2 - 1;
+			for (p = a; p < r; ++p) {
+				p->density = p->wall_flag * 9.0f;
+				for (q = a; q < r; ++q) {
+					w = abs(d = p->position - q->position) / 2 - 1;
 					if (0 < (x = (1.0f - w).real())) {
-						p[2] += w * w;
+						p->density += w * w;
 						++dbg__sim_ops_per_frame;
 					}
 					++dbg__sim_cells_per_frame;
 				}
 			}
 
-			for (p = a; p < r; p += 5) {
-				p[3] = Gravity;
-				for (q = a; q < r; q += 5) {
-					w = abs(d = p[0] - q[0]) / 2 - 1;
+			for (p = a; p < r; ++p) {
+				p->force = Gravity;
+				for (q = a; q < r; ++q) {
+					w = abs(d = p->position - q->position) / 2 - 1;
 					if (0 < (x = (1.0f - w).real())) {
-						p[3] += w * (d * (3.0f - p[2] - q[2]) * Pressure + p[4] * Velocity - q[4] * Velocity) / p[2];
+						p->force += w * (d * (3.0f - p->density - q->density) * Pressure + p->velocity * Velocity - q->velocity * Velocity) / p->density;
 						++dbg__sim_ops_per_frame;
 					}
 					++dbg__sim_cells_per_frame;
@@ -120,10 +120,10 @@ public:
 				++dbg__render_ops_per_frame;
 			}
 
-			// marching squares, and sim cell position update
-			for (p = a; p < r; p += 5) {
-				t = b + (x = (p[0] * I).real()) + SCR_WID * (y = (p[0] / 2.0f).real());
-				p[0] += p[4] += (p[3] / 10.0f) * (float)(!(p[1].real()));
+			// compute marching square edges, and sim cell position update
+			for (p = a; p < r; ++p) {
+				t = b + (x = (p->position * I).real()) + SCR_WID * (y = (p->position / 2.0f).real());
+				p->position += p->velocity += (p->force / 10.0f) * (float)(!(p->wall_flag.real()));
 				if (0 <= x && x < 79 && 0 <= y && y < 23) {
 					t[0] |= 8;
 					t[1] |= 4;
@@ -134,6 +134,7 @@ public:
 				++dbg__render_ops_per_frame;
 			}
 
+			// render marching square edge data to ascii
 			for (x = 0; 2002 > x; ++x) {
 				bool want_newline = (x > 0) && (((x + 1) % SCR_WID) == 0);
 				if (want_newline) {
@@ -162,8 +163,8 @@ protected:
 		puts("\x1b[1;1H");
 	}
 
-	complex_type		a[SIMBUF_LEN];
-	complex_type		*r;
+	Particle			a[SIMBUF_LEN];
+	Particle			*r;
 	char				b[SCRBUF_LEN];
 };
 
