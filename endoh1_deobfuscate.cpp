@@ -135,7 +135,17 @@ public:
 			}
 
 			for (x = 0; 2002 > x; ++x) {
-				b[x] = " '`-.|//,\\|\\_\\/#\n"[x % SCR_WID ? x[b] : 16];
+//				b[x] = " '`-.|//,\\|\\_\\/#\n"[x % SCR_WID ? b[x] : 16];
+
+				bool want_newline = (x > 0) && ((x % SCR_WID) == 0);
+				if (want_newline) {
+					b[x] = '\n';
+				}
+				else {
+					char edge_bits = b[x];
+					b[x] = " '`-.|//,\\|\\_\\/#"[edge_bits];
+				}
+
 				++dbg__render_ops_per_frame;
 			}
 
@@ -447,8 +457,8 @@ int main ()
 	return 0;
 }
 
-// gcc -DG=1 -DP=4 -DV=8 -D_BSD_SOURCE -std=c99 -Wall -W -Wextra -pedantic endoh1.c
-// gcc -DGravity=1 -DPressure=4 -DVelocity=8 -D_BSD_SOURCE -std=c99 -Wall -W -Wextra -pedantic -o endoh1_deobfuscate.exe endoh1_deobfuscate.c
+// gcc -DG=1 -DP=4 -DV=8 -D_BSD_SOURCE -std=c99 -Wall -W -Wextra -pedantic -O2 -o endoh1.exe endoh1.c
+// gcc -DGravity=1 -DPressure=4 -DVelocity=8 -D_BSD_SOURCE -std=c99 -Wall -W -Wextra -pedantic -O2 -o endoh1_deobfuscate.exe endoh1_deobfuscate.c
 
 #endif // 0
 
