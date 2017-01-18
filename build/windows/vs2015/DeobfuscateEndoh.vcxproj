@@ -147,7 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\endoh1_deobfuscate.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">S:\temp\tmp585B.tmp.cpp</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\windows\ansicolor\ansicolor-w32.c" />
   </ItemGroup>
