@@ -94,7 +94,7 @@ public:
 			for (p = a; p < r; p += 5) {
 				p[2] = p[1] * 9.0f;
 				for (q = a; q < r; q += 5) {
-					w = abs(d = *p - *q) / 2 - 1;
+					w = abs(d = p[0] - q[0]) / 2 - 1;
 					if (0 < (x = (1.0f - w).real())) {
 						p[2] += w * w;
 						++dbg__sim_ops_per_frame;
@@ -106,7 +106,7 @@ public:
 			for (p = a; p < r; p += 5) {
 				p[3] = Gravity;
 				for (q = a; q < r; q += 5) {
-					w = abs(d = *p - *q) / 2 - 1;
+					w = abs(d = p[0] - q[0]) / 2 - 1;
 					if (0 < (x = (1.0f - w).real())) {
 						p[3] += w * (d * (3.0f - p[2] - q[2]) * Pressure + p[4] * Velocity - q[4] * Velocity) / p[2];
 						++dbg__sim_ops_per_frame;
@@ -120,10 +120,10 @@ public:
 				++dbg__render_ops_per_frame;
 			}
 
-			// marching squares
+			// marching squares, and sim cell position update
 			for (p = a; p < r; p += 5) {
-				t = b + 10 + (x = (*p * I).real()) + 80 * (y = (*p / 2.0f).real());
-				*p += p[4] += (p[3] / 10.0f) * (float)(!(p[1].real()));
+				t = b + 10 + (x = (p[0] * I).real()) + 80 * (y = (p[0] / 2.0f).real());
+				p[0] += p[4] += (p[3] / 10.0f) * (float)(!(p[1].real()));
 				if (0 <= x && x < 79 && 0 <= y && y < 23) {
 					t[0] |= 8;
 					t[1] |= 4;
