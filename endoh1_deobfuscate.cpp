@@ -121,8 +121,16 @@ public:
 			}
 
 			// marching squares
-			for (p = a; (t = b + 10 + (x = (*p * I).real()) + 80 * (y = (*p / 2.0f).real()), *p += p[4] += (p[3] / 10.0f) * (float)(!(p[1].real())) ), p < r; p += 5) {
-				x = 0 <= x && x < 79 && 0 <= y && y < 23 ? 1[1[*t |= 8, t] |= 4, t += 80] = 1, *t |= 2 : 0;
+			for (p = a; p < r; p += 5) {
+				t = b + 10 + (x = (*p * I).real()) + 80 * (y = (*p / 2.0f).real());
+				*p += p[4] += (p[3] / 10.0f) * (float)(!(p[1].real()));
+				if (0 <= x && x < 79 && 0 <= y && y < 23) {
+					t[0] |= 8;
+					t[1] |= 4;
+					t += 80;
+					t[0] |= 2;
+					t[1] = 1;
+				}
 				++dbg__render_ops_per_frame;
 			}
 
