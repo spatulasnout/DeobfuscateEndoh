@@ -18,12 +18,13 @@ using std::unique_ptr;
 #define Pressure	4.0f
 #define Velocity	8.0f
 
-typedef complex<float> complex_type;
+typedef float real_type;
+typedef complex<real_type> complex_type;
 
 struct Particle {
 	complex_type	position;
-	complex_type	wall_flag;
-	complex_type	density;
+	int				wall_flag;
+	real_type		density;
 	complex_type	force;
 	complex_type	velocity;
 };
@@ -71,21 +72,26 @@ public:
 
 		clearscreen();
 
+		int dbg__frame = 0;
 		int dbg__sim_cells_per_frame = 0;
 		int dbg__sim_ops_per_frame = 0;
 		int dbg__render_ops_per_frame = 0;
 
 		for (;;) {
 			Particle *p, *q;
-			complex_type w, d;
+			complex_type d;
+			real_type w;
 			int x, y;
 			char *t;
+
+			++dbg__frame;
 
 			cursor_home();
 
 			puts(b);
 
-			printf("\nsim cells/frame: %08d\nsim ops/frame  : %08d\nvis ops/frame  : %08d\n", dbg__sim_cells_per_frame, dbg__sim_ops_per_frame, dbg__render_ops_per_frame);
+			printf("\nframe          : %08d\nsim cells/frame: %08d\nsim ops/frame  : %08d\nvis ops/frame  : %08d\n",
+					dbg__frame, dbg__sim_cells_per_frame, dbg__sim_ops_per_frame, dbg__render_ops_per_frame);
 
 			dbg__sim_cells_per_frame = 0;
 			dbg__sim_ops_per_frame = 0;
@@ -95,7 +101,7 @@ public:
 				p->density = p->wall_flag * 9.0f;
 				for (q = a; q < r; ++q) {
 					w = abs(d = p->position - q->position) / 2 - 1;
-					if (0 < (x = (1.0f - w).real())) {
+					if (0 < (x = (1.0f - w))) {
 						p->density += w * w;
 						++dbg__sim_ops_per_frame;
 					}
@@ -107,8 +113,8 @@ public:
 				p->force = Gravity;
 				for (q = a; q < r; ++q) {
 					w = abs(d = p->position - q->position) / 2 - 1;
-					if (0 < (x = (1.0f - w).real())) {
-						p->force += w * (d * (3.0f - p->density - q->density) * Pressure + p->velocity * Velocity - q->velocity * Velocity) / p->density;
+					if (0 < (x = (1.0f - w))) {
+						p->force += w * ((d * (3.0f - p->density - q->density) * Pressure) + (p->velocity * Velocity) - (q->velocity * Velocity)) / p->density;
 						++dbg__sim_ops_per_frame;
 					}
 					++dbg__sim_cells_per_frame;
@@ -123,7 +129,7 @@ public:
 			// compute marching square edges, and sim cell position update
 			for (p = a; p < r; ++p) {
 				t = b + (x = (p->position * I).real()) + SCR_WID * (y = (p->position / 2.0f).real());
-				p->position += p->velocity += (p->force / 10.0f) * (float)(!(p->wall_flag.real()));
+				p->position += p->velocity += (p->force / 10.0f) * (float)(!(p->wall_flag));
 				if (0 <= x && x < 79 && 0 <= y && y < 23) {
 					t[0] |= 8;
 					t[1] |= 4;
