@@ -128,7 +128,7 @@ public:
 
 			// compute marching square edges, and sim cell position update
 			for (p = a; p < r; ++p) {
-				t = b + (x = (p->position * I).real()) + SCR_WID * (y = (p->position / 2.0f).real());
+				t = b + (x = (- p->position.imag())) + SCR_WID * (y = (p->position.real() / 2.0f));
 				p->position += p->velocity += (p->force / 10.0f) * (float)(!(p->wall_flag));
 				if (0 <= x && x < 79 && 0 <= y && y < 23) {
 					t[0] |= 8;
