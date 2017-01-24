@@ -39,7 +39,7 @@ public:
 	{
 		using namespace std::complex_literals;
 
-		const complex_type I(1i);
+		// const complex_type I(1i);
 		complex_type w;
 
 		r = a;
@@ -54,7 +54,8 @@ public:
 					r += 2;
 				}
 
-				w = w - I;
+				// w = w - I;
+				w.imag( w.imag() + 1.0f );
 			}
 			else {
 				w = complex_type(((int)w.real()) + 2, 0);
@@ -66,7 +67,7 @@ public:
 	{
 		using namespace std::complex_literals;
 
-		const complex_type I(1i);
+		// const complex_type I(1i);
 
 		memset(b, 0, SCRBUF_LEN);
 
@@ -128,7 +129,7 @@ public:
 
 			// compute marching square edges, and sim cell position update
 			for (p = a; p < r; ++p) {
-				t = b + (x = (- p->position.imag())) + SCR_WID * (y = (p->position.real() / 2.0f));
+				t = b + (x = ( p->position.imag())) + SCR_WID * (y = (p->position.real() / 2.0f));
 				p->position += p->velocity += (p->force / 10.0f) * (float)(!(p->wall_flag));
 				if (0 <= x && x < 79 && 0 <= y && y < 23) {
 					t[0] |= 8;
